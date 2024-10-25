@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { EventDto } from './dto/event.dto';
-import { Account } from './entities/account.entity';
+import { Account, EventResponse } from './entities/account.entity';
 
 @Injectable()
 export class AccountService {
-  accounts: Account[];
+  private accounts: Account[];
 
   constructor() {
     this.accounts = [];
@@ -13,12 +13,12 @@ export class AccountService {
 
   getBalance(account_id: string) {
     const account = this.accounts.find(({id}) => id === account_id);
-    if (!account) throw new NotFoundException('0');
+    if (!account) throw new NotFoundException();
 
     return account.balance
   }
 
-  event(event: EventDto) {
+  event(event: EventDto): EventResponse {
     switch (event.type) {
       case 'deposit':
         return this.deposit(event);
@@ -31,31 +31,30 @@ export class AccountService {
     }
   }
 
-  reset() {
+  reset(): string {
     this.accounts = [];
 
     return 'OK';
   }
 
-  deposit(event: EventDto) {
+  deposit(event: EventDto): EventResponse {
     let account = this.accounts.find(({id}) => id === event.destination);
 
     if (account) {
       account.balance += event.amount;
     } else {
       account = {id: event.destination, balance: event.amount};
-
       this.accounts.push(account);
     }
 
     return { destination: account };
   }
 
-  withdraw(event: EventDto) {
+  withdraw(event: EventDto): EventResponse {
     const account = this.accounts.find(({id}) => id === event.origin);
 
     if (!account) {
-      throw new NotFoundException('0');
+      throw new NotFoundException();
     }
 
     account.balance -= event.amount;
@@ -63,12 +62,12 @@ export class AccountService {
     return { origin: account };
   }
 
-  transfer(event: EventDto) {
+  transfer(event: EventDto): EventResponse {
     const accountOrigin = this.accounts.find(({id}) => id === event.origin);
     let accountDestination = this.accounts.find(({id}) => id === event.destination);
 
     if (!accountOrigin) {
-      throw new NotFoundException('0');
+      throw new NotFoundException();
     }
 
     accountOrigin.balance -= event.amount;
