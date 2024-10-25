@@ -1,8 +1,10 @@
-import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query, UseFilters } from '@nestjs/common';
 
 import { AccountService } from './account/account.service';
 import { EventDto } from './account/dto/event.dto';
+import { NotFoundExceptionFilter } from './shared/filters/not-found.exception.filter';
 
+@UseFilters(NotFoundExceptionFilter)
 @Controller()
 export class AppController {
   constructor(private readonly accountService: AccountService) {}

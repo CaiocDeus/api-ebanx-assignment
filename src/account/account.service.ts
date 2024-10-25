@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Account } from './entities/account.entity';
+
 import { EventDto } from './dto/event.dto';
+import { Account } from './entities/account.entity';
 
 @Injectable()
 export class AccountService {
@@ -32,6 +33,8 @@ export class AccountService {
 
   reset() {
     this.accounts = [];
+
+    return 'OK';
   }
 
   deposit(event: EventDto) {
